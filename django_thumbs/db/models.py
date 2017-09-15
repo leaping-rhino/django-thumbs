@@ -6,7 +6,7 @@ https://github.com/madmw/django-thumbs
 A fork of django-thumbs [http://code.google.com/p/django-thumbs/] by Antonio Melé [http://django.es].
 
 """
-import cStringIO
+import io
 from django.db.models import ImageField
 from django.db.models.fields.files import ImageFieldFile
 from django.core.files.base import ContentFile
@@ -39,11 +39,11 @@ def generate_thumb(original, size, preserve_ratio, format='JPEG'):
         image.thumbnail(size, Image.ANTIALIAS)
     else:
         image = ImageOps.fit(image, size, Image.ANTIALIAS)
-    io = cStringIO.StringIO()
+    data_stream = io.BytesIO()
     if format.upper() == 'JPG':
         format = 'JPEG'
-    image.save(io, format)
-    return ContentFile(io.getvalue())
+    image.save(data_stream, format)
+    return ContentFile(data_stream.getvalue())
 
 
 class ImageWithThumbsFieldFile(ImageFieldFile):
